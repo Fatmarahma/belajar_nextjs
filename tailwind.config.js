@@ -8,10 +8,19 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        primary: "#ffffff",
+        warnaGue: "#FFB0B0",
+      },
+      fontFamily: {
+        poppins: ["Poppins", "sans-serif"],
       },
     },
   },
   plugins: [],
 };
+
+/**
+ * file tailwind.config.js file yang  dibuat otomatis oleh nextjs saat instalasi yang  digunakan
+ * untuk mengkonfigurasi tailwinddcss seperti warna custom,gradient, ukuran,dll
+ * lebih detailnya bisa baca dikumentasinya di https://tailwindcss.com/docs/configuration
+ */
