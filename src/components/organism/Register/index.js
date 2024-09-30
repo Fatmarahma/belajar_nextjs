@@ -10,12 +10,6 @@ const Register = () => {
       <InputForm label="email" name="email" placeholder="Masukan email" />
       <InputForm label="password" name="password" placeholder="Masukan password" />
       <Button size={"w-full"}>Login</Button>
-      <p className="text-sm text-center mt-2">
-        Already have an account?
-        <Link href="/login" className="text-blue-500 hover:text-blue-700">
-          Login
-        </Link>
-      </p>
     </form>
   );
 };
