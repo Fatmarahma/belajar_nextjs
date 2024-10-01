@@ -9,7 +9,6 @@ const Login = () => {
       <InputForm label="username" name="email" placeholder="Masukan email" />
       <InputForm label="password" name="password" placeholder="Masukan password" />
       <Button size={"w-full"}>Login</Button>
-      
     </form>
   );
 };
