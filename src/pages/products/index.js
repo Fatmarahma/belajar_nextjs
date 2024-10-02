@@ -1,14 +1,19 @@
 import Button from "@/components/atoms/Buttons";
 import CardProduct from "@/components/molecules/CardProduct";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { data } from "@/constant/data";
+import BackToTop from "@/components/atoms/Icons/BackToTop";
 
 function ProductsPage() {
+  const footerRef = useRef();
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
   const [username, setUsername] = useState("");
   const [cart, setCart] = useState([]);
   const [total, setTotal] = useState(0);
 
+  //useEffect untuk data dari localStorage
   useEffect(() => {
     const getUsername = localStorage.getItem("username");
     if (getUsername) {
@@ -17,13 +22,14 @@ function ProductsPage() {
     setCart(JSON.parse(localStorage.getItem("cart")) || []);
   }, []);
 
+  //untuk menghapus data dari localstorage
   const handleLogout = () => {
     localStorage.removeItem("username");
     localStorage.removeItem("username");
     localStorage.removeItem("cart");
     window.location.href = "/login";
   };
-
+  //menambahkan product ke cart
   const handleAddToCart = (id) => {
     const itemInCart = cart.find((item) => item.id === id);
 
@@ -37,6 +43,7 @@ function ProductsPage() {
     }
   };
 
+  //untuk menghitung total harga dan menyimpan data cart ke localstorage.
   useEffect(() => {
     if (cart.length > 0) {
       const sum = cart.reduce((total, item) => {
@@ -47,6 +54,35 @@ function ProductsPage() {
       localStorage.setItem("cart", JSON.stringify(cart));
     }
   }, [cart]);
+
+  //usseEffect untuk menghandle button backtotop
+  useEffect(() => {
+    function handleScroll() {
+      const footerTop = footerRef.current.offsetTop;
+
+      const viewportHeight = window.innerHeight;
+
+      const scrollPosition = window.scrollY;
+      // cek apakah posisi scroll dilayar sudah mencapai elemen footer
+      if (scrollPosition + viewportHeight >= footerTop) {
+        setShowBackToTop(true);
+      } else {
+        setShowBackToTop(false);
+      }
+    }
+    //event listener untuk ngecek scroll
+    window.addEventListener("scroll", handleScroll);
+
+    //kembalikan fungsi yang akan dijalankan saat layar berhenti  di scroll
+    return () => {
+      window.removeEventListener("scroll", handleScroll); //hapus event listener pada event scroll ketika scroll berhenti
+    };
+  }, [footerRef]); //<- akan dipantau setiap kali ada perubahan.
+
+  const handleBackToTop = () => {
+    //window.scrollTo L untuk menscrik layar keatas dengan animasi yang smooth
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <>
@@ -112,6 +148,15 @@ function ProductsPage() {
           </div>
         )}
       </div>
+      {showBackToTop && (
+        <div onClick={handleBackToTop} className="fixed right-5 bottom-20 bg-blue-600 p-2 rounded-full">
+          <BackToTop />
+        </div>
+      )}
+
+      <footer ref={footerRef} className="text-center p-5 bg-gray-800 text-white w-full">
+        copyright by fatma
+      </footer>
     </>
   );
 }
