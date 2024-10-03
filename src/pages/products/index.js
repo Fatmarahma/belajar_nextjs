@@ -1,6 +1,6 @@
 import Button from "@/components/atoms/Buttons";
 import CardProduct from "@/components/molecules/CardProduct";
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import Image from "next/image";
 import { data } from "@/constant/data";
 import BackToTop from "@/components/atoms/Icons/BackToTop";
@@ -12,6 +12,12 @@ function ProductsPage() {
   const [username, setUsername] = useState("");
   const [cart, setCart] = useState([]);
   const [total, setTotal] = useState(0);
+  const [search, setSearch] = useState("");
+  const [showSearch, setShowSearch] = useState(false);
+
+  const searchProduct = useMemo(() => {
+    return data.filter((product) => product.name.toLowerCase().includes(search.toLowerCase()));
+  }, [search]);
 
   //useEffect untuk data dari localStorage
   useEffect(() => {
@@ -30,18 +36,25 @@ function ProductsPage() {
     window.location.href = "/login";
   };
   //menambahkan product ke cart
-  const handleAddToCart = (id) => {
-    const itemInCart = cart.find((item) => item.id === id);
+  //eventHandler diganti ke useCallback
+  /**useCallback : hooks yang dipakai untuk menyimpan fungsi di cache agar fungsi hanya dijalankan
+   * ketika ada perubahan  pada nilai fungsi tersebut
+   */
+  const handleAddToCart = useCallback(
+    (id) => {
+      const itemInCart = cart.find((item) => item.id === id);
 
-    if (itemInCart) {
-      // Update quantity if item already exists in cart
-      setCart(cart.map((item) => (item.id === id ? { ...item, qty: item.qty + 1 } : item)));
-    } else {
-      // Add new item to cart with qty set to 1
-      const newItem = { id, qty: 1 }; // Assuming you want to add just the id and qty
-      setCart([...cart, newItem]);
-    }
-  };
+      if (itemInCart) {
+        // Update quantity if item already exists in cart
+        setCart(cart.map((item) => (item.id === id ? { ...item, qty: item.qty + 1 } : item)));
+      } else {
+        // Add new item to cart with qty set to 1
+        const newItem = { id, qty: 1 }; // Assuming you want to add just the id and qty
+        setCart([...cart, newItem]);
+      }
+    },
+    [cart]
+  );
 
   //useMemo untuk menghitung total harga cart dan menyimpan hasil perhitungan ke cache
   /** useMemo : hooks untuk menyipan hasil komputasi (perhitungan matematika) di cache
@@ -96,6 +109,31 @@ function ProductsPage() {
     <>
       <div className="flex justify-between items-center bg-blue-500 px-5 py-4">
         <h1 className="text-xl">Welcome, {username}</h1>
+        <div className="w-[300px]">
+          <input
+            type="text"
+            placeholder="search..."
+            className="py-2 px-4 rounded-full w-[300px]"
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              if (e.target.value !== "") {
+                setShowSearch(true);
+              } else {
+                setShowSearch(false);
+              }
+            }}
+          />
+          {showSearch && searchProduct.length > 0 && (
+            <ul className="absolute bg-white text-black w-[300px] mt-1 py-2 px-3 rounded-lg">
+              {searchProduct.map((product) => (
+                <li key={product.id} className="my-1">
+                  {product.name}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
         <Button color="bg-red-500" textButton="Logout" onClick={handleLogout} />
       </div>
       <div className="flex px-5 py-4">
