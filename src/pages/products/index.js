@@ -212,9 +212,23 @@ function ProductsPage({ products }) {
 }
 
 export async function getServerSideProps() {
+  //cara  pertama untuk mangil service satu satu
+  //try {
+  //   const products = await getProducts();
+  //   const slicedProducts = products.slice(0, 8);
+  //   return {
+  //     props: {
+  //       products: slicedProducts || [],
+  //     },
+  //   };
+  // } catch (error) {
+  //   console.log(error);
+  // }
+
+  //  cara kedua mangil beberapa service  sekaligus menggunakan promise.all
   try {
-    const products = await getProducts();
-    const slicedProducts = products.slice(0, 8);
+    const [productResults] = await Promise.all([getProducts()]);
+    const slicedProducts = productResults.slice(0, 8);
     return {
       props: {
         products: slicedProducts || [],
