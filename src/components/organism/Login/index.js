@@ -2,21 +2,30 @@ import React from "react";
 import InputForm from "../../molecules/InputForm";
 import Button from "../../atoms/Buttons";
 import Link from "next/link";
+import { login } from "@/services/auth";
 
 const Login = () => {
-  // buat fungsi handle login
-  const handleLogin = (event) => {
-    //event.preventDefault berfungsi untuk mencegah halaman agar tidak refres /reload saat fungsi di trigger
+  const handleLogin = async (event) => {
     event.preventDefault();
-    console.log("Login");
-    // event.target.username.value :  untuk mengambil data dalam inputan form dan ngehasilin ke log
-    console.log(event.target.username.value);
-    console.log(event.target.password.value);
-    // localstorage.setItem: untuk menyimpan data dari inputan form ke dalam penyimpanan lokal milik browser
-    localStorage.setItem("username", event.target.username.value);
-    localStorage.setItem("password", event.target.password.value);
-    // window.location.href = berfungsi untuk mwngarahkan ke halaman lain
-    window.location.href = "/products";
+    //
+    const payload = {
+      username: event.target.username.value,
+      password: event.target.password.value,
+    };
+    //
+    try {
+      const response = await login(payload);
+      console.log(response);
+      //cek token
+      if (response.status) {
+        localStorage.setItem("token", response.token);
+        window.location.href = "/products";
+      } else {
+        console.log("Login failed", response);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (

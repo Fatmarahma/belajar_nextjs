@@ -5,6 +5,7 @@ import Image from "next/image";
 import { data } from "@/constant/data";
 import BackToTop from "@/components/atoms/Icons/BackToTop";
 import { getProducts } from "@/services/products";
+import { getUsername } from "@/services/auth";
 
 function ProductsPage() {
   const footerRef = useRef();
@@ -36,9 +37,11 @@ function ProductsPage() {
 
   //useEffect untuk data dari localStorage
   useEffect(() => {
-    const getUsername = localStorage.getItem("username");
-    if (getUsername) {
-      setUsername(getUsername);
+    const token = localStorage.getItem("token");
+    if (token) {
+      setUsername(getUsername(token));
+    } else {
+      window.location.href = "/login";
     }
     setCart(JSON.parse(localStorage.getItem("cart")) || []);
   }, []);
