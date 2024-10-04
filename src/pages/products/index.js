@@ -9,7 +9,7 @@ import { getUsername } from "@/services/auth";
 import useLogin from "@/hooks/useLogin";
 import { formatCurrency } from "@/helpers/utils/formatCurrency";
 
-function ProductsPage() {
+function ProductsPage({ products }) {
   const footerRef = useRef();
   const [showBackToTop, setShowBackToTop] = useState(false);
 
@@ -18,20 +18,6 @@ function ProductsPage() {
   const [total, setTotal] = useState(0);
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
-  const [products, setProducts] = useState([]); //<-- state untuk menyimpan data dari API
-
-  // useEffect untuk manggil fungsi service getProducts
-  useEffect(() => {
-    async function fetchProducts() {
-      try {
-        const dataProduct = await getProducts();
-        setProducts(dataProduct.slice(0, 8));
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    fetchProducts();
-  }, []);
 
   const searchProduct = useMemo(() => {
     return products.filter((product) => product.title.toLowerCase().includes(search.toLowerCase()));
@@ -225,4 +211,17 @@ function ProductsPage() {
   );
 }
 
+export async function getServerSideProps() {
+  try {
+    const products = await getProducts();
+    const slicedProducts = products.slice(0, 8);
+    return {
+      props: {
+        products: slicedProducts || [],
+      },
+    };
+  } catch (error) {
+    console.log(error);
+  }
+}
 export default ProductsPage;
