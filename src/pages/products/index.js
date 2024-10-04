@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useMemo, useCallback } from "react"
 import Image from "next/image";
 import { data } from "@/constant/data";
 import BackToTop from "@/components/atoms/Icons/BackToTop";
+import { getProducts } from "@/services/products";
 
 function ProductsPage() {
   const footerRef = useRef();
@@ -14,9 +15,23 @@ function ProductsPage() {
   const [total, setTotal] = useState(0);
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
+  const [products, setProducts] = useState([]); //<-- state untuk menyimpan data dari API
+
+  // useEffect untuk manggil fungsi service getProducts
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const dataProduct = await getProducts();
+        setProducts(dataProduct.slice(0, 8));
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchProducts();
+  }, []);
 
   const searchProduct = useMemo(() => {
-    return data.filter((product) => product.name.toLowerCase().includes(search.toLowerCase()));
+    return products.filter((product) => product.title.toLowerCase().includes(search.toLowerCase()));
   }, [search]);
 
   //useEffect untuk data dari localStorage
@@ -60,14 +75,16 @@ function ProductsPage() {
   /** useMemo : hooks untuk menyipan hasil komputasi (perhitungan matematika) di cache
    * agar tidak perlu dijalankan/dihitung ulang ketika ada perubahan.
    * dalam kasus ini useMemo untuk menyimpan hasil total cart di cache sehingga halaman di refres
+   *
+   * product?.price <- optimal chaining= sebuah penjagaan untuk memastikan nilai/propertynya ada atau tidak
    */
 
   const cartTotal = useMemo(() => {
     return cart.reduce((total, item) => {
-      const product = data.find((product) => product.id === item.id);
-      return total + product.price * item.qty;
+      const product = products.find((product) => product.id === item.id);
+      return total + product?.price * item.qty;
     }, 0);
-  }, [cart]); // <--- data yang lagi dipantau perubahannya
+  }, [cart, products]); // <--- data yang lagi dipantau perubahannya
 
   //untuk menghitung total harga dan menyimpan data cart ke localstorage.
   useEffect(() => {
@@ -128,7 +145,7 @@ function ProductsPage() {
             <ul className="absolute bg-white text-black w-[300px] mt-1 py-2 px-3 rounded-lg">
               {searchProduct.map((product) => (
                 <li key={product.id} className="my-1">
-                  {product.name}
+                  {product.title}
                 </li>
               ))}
             </ul>
@@ -141,10 +158,10 @@ function ProductsPage() {
           <h1 className="text-3xl font-bold mb-2 uppercase">Products</h1>
           {/* products */}
           <div className="flex flex-wrap gap-4">
-            {data.map((item) => (
+            {products.map((item) => (
               <CardProduct key={item.id}>
                 <CardProduct.Header image={item.image} />
-                <CardProduct.Body title={item.name} desc={item.desc} />
+                <CardProduct.Body title={item.title} desc={item.description} />
                 <CardProduct.Footer
                   price={item.price}
                   onClick={() => {
@@ -157,20 +174,26 @@ function ProductsPage() {
         </div>
         {/* cart */}
         {cart.length > 0 && (
-          <div className="cart w-1/3">
+          <div className="cart min-w-[400px] max-w-[400px]">
             <h1 className="text-3xl font-bold mb-2 uppercase">Cart</h1>
             <div className="flex flex-col gap-2">
               {cart.map((item) => {
-                const datas = data.find((data) => data.id === item.id);
+                const datas = products.find((data) => data.id === item.id);
                 return (
                   <>
                     <div key={item.id} className="flex p-4 border rounded-lg">
-                      <Image src={datas.image} width={500} height={500} alt="cart item" className="max-w-[100px]" />
+                      <Image
+                        src={datas?.image}
+                        width={100}
+                        height={100}
+                        alt="cart item"
+                        className="aspect-square object-contain"
+                      />
                       <div className="flex justify-between w-full">
                         <div className="flex flex-col justify-between ml-3">
-                          <span className="font-bold text-xl">{datas.name}</span>
+                          <span className="font-bold text-xl line-clamp-2">{datas?.title}</span>
                           <span className="font-semibold">
-                            {(datas.price * item.qty).toLocaleString("id-ID", { style: "currency", currency: "IDR" })}
+                            {(datas?.price * item.qty).toLocaleString("id-ID", { style: "currency", currency: "IDR" })}
                           </span>
                         </div>
                         <div className="flex flex-col justify-center items-center">

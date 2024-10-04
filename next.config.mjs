@@ -1,7 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // basePath:"/home", // <- basePath untuk mengubah url halaman utama 
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "fakestoreapi.com",
+        pathname: "/**/*",
+      },
+    ],
+  },
+  // basePath:"/home", // <- basePath untuk mengubah url halaman utama
 };
 
 export default nextConfig;
