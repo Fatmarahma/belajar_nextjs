@@ -6,12 +6,14 @@ import { data } from "@/constant/data";
 import BackToTop from "@/components/atoms/Icons/BackToTop";
 import { getProducts } from "@/services/products";
 import { getUsername } from "@/services/auth";
+import useLogin from "@/hooks/useLogin";
+import { formatCurrency } from "@/helpers/utils/formatCurrency";
 
 function ProductsPage() {
   const footerRef = useRef();
   const [showBackToTop, setShowBackToTop] = useState(false);
 
-  const [username, setUsername] = useState("");
+  const username = useLogin();
   const [cart, setCart] = useState([]);
   const [total, setTotal] = useState(0);
   const [search, setSearch] = useState("");
@@ -37,12 +39,6 @@ function ProductsPage() {
 
   //useEffect untuk data dari localStorage
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      setUsername(getUsername(token));
-    } else {
-      window.location.href = "/login";
-    }
     setCart(JSON.parse(localStorage.getItem("cart")) || []);
   }, []);
 
@@ -195,9 +191,7 @@ function ProductsPage() {
                       <div className="flex justify-between w-full">
                         <div className="flex flex-col justify-between ml-3">
                           <span className="font-bold text-xl line-clamp-2">{datas?.title}</span>
-                          <span className="font-semibold">
-                            {(datas?.price * item.qty).toLocaleString("id-ID", { style: "currency", currency: "IDR" })}
-                          </span>
+                          <span className="font-semibold">{formatCurrency(datas?.price * item.qty)}</span>
                         </div>
                         <div className="flex flex-col justify-center items-center">
                           <span className="mb-1">Qty</span>
@@ -213,9 +207,7 @@ function ProductsPage() {
             </div>
             <div className="flex justify-between px-4 py-2 border mt-2">
               <span className="font-semibold">total</span>
-              <span className="font-semibold">
-                {cartTotal.toLocaleString("id-ID", { style: "currency", currency: "IDR" })}
-              </span>
+              <span className="font-semibold">{formatCurrency(cartTotal)}</span>
             </div>
           </div>
         )}
