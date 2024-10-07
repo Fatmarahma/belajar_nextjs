@@ -9,6 +9,7 @@ import { getUsername } from "@/services/auth";
 import useLogin from "@/hooks/useLogin";
 import { formatCurrency } from "@/helpers/utils/formatCurrency";
 import { revalidatePath } from "next/cache";
+import Modal from "@/components/atoms/Modal";
 
 function ProductsPage({ products }) {
   const footerRef = useRef();
@@ -19,6 +20,7 @@ function ProductsPage({ products }) {
   const [total, setTotal] = useState(0);
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const searchProduct = useMemo(() => {
     return products.filter((product) => product.title.toLowerCase().includes(search.toLowerCase()));
@@ -28,6 +30,10 @@ function ProductsPage({ products }) {
   useEffect(() => {
     setCart(JSON.parse(localStorage.getItem("cart")) || []);
   }, []);
+
+  const handleClose = () => {
+    setShowModal(false);
+  };
 
   //untuk menghapus data dari localstorage
   const handleLogout = () => {
@@ -137,7 +143,14 @@ function ProductsPage({ products }) {
             </ul>
           )}
         </div>
-        <Button color="bg-red-500" textButton="Logout" onClick={handleLogout} />
+        <Button
+          color="bg-red-500"
+          textButton="Logout"
+          onClick={() => {
+            setShowModal(true);
+          }}
+        />
+        {showModal && <Modal handleClose={handleClose} handleLogout={handleLogout} />}
       </div>
       <div className="flex px-5 py-4">
         <div className="flex flex-col">
