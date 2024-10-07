@@ -8,6 +8,7 @@ import { getProducts } from "@/services/products";
 import { getUsername } from "@/services/auth";
 import useLogin from "@/hooks/useLogin";
 import { formatCurrency } from "@/helpers/utils/formatCurrency";
+import { revalidatePath } from "next/cache";
 
 function ProductsPage({ products }) {
   const footerRef = useRef();
@@ -210,6 +211,9 @@ function ProductsPage({ products }) {
     </>
   );
 }
+/**Incremental ststic regeneration : teknik yang menggabungkan SSR dan SSG, dimana teknik ini memuat halaman website
+ * secara statis namun halamannya bisa di update secara dinamis jika ada perubahan data
+ */
 
 export async function getStaticProps() {
   try {
@@ -219,6 +223,7 @@ export async function getStaticProps() {
       props: {
         products: slicedProducts || [],
       },
+      revalidate: 60, //<- revalidate akan merefres/mengupdate data setelah 60detik.
     };
   } catch (error) {
     console.log(error);
