@@ -1,23 +1,19 @@
+import { isMobileScreenAtom } from "@/jotai/atoms";
 import "@/styles/globals.css";
-import { Provider } from "react-redux";
+import { useSetAtom } from "jotai";
 import { useEffect } from "react";
-import { setIsMobileScreen } from "@/store/screen/screenSlice";
-import store from "@/store/store";
 
 export default function App({ Component, pageProps }) {
-  useEffect(() => {
-    function handleResize() {
-      store.dispatch(setIsMobileScreen(window.innerWidth < 768));
-    }
-    handleResize();
+  // const setIsMobileScreen = useSetAtom(isMobileScreenAtom);
+  // useEffect(() => {
+  //   function handleResize() {
+  //     setIsMobileScreen(window.innerWidth < 768);
+  //   }
+  //   handleResize();
 
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  });
+  //   window.addEventListener("resize", handleResize);
+  //   return () => window.removeEventListener("resize", handleResize);
+  // }, [setIsMobileScreen]);
 
-  return (
-    <Provider store={store}>
-      <Component {...pageProps} />
-    </Provider>
-  );
+  return <Component {...pageProps} />;
 }

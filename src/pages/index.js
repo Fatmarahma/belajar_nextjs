@@ -1,13 +1,24 @@
 import Button from "@/components/atoms/Buttons";
 import Card from "@/components/molecules/CardWithChildren";
-import { useSelector } from "react-redux";
+import { isMobileScreenAtom } from "@/jotai/atoms";
+import { useAtom } from "jotai";
+import { useEffect, useState } from "react";
 
-/** file index.js  ini dibuat secara otomatis di folder src/pages.
- * file ini akan menjadi halaman utama di aplikasi next.js
- */
 export default function Home() {
-  const isMobileScreen = useSelector((state) => state.screen.isMobileScreen);
-  console.log(isMobileScreen);
+  const [isMobileScreen, setIsMobileScreen] = useAtom(isMobileScreenAtom);
+
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
+
+  useEffect(() => {
+    function handleResize() {
+      setIsMobileScreen(window.innerWidth < 768);
+      setIsLargeScreen(window.innerWidth >= 1240);
+    }
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [setIsMobileScreen]);
+  console.log(isMobileScreen, isLargeScreen);
 
   return (
     <div className=" p-4 font-poppins flex justify-center items-center min-h-screen">
