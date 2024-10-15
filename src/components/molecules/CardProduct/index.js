@@ -1,13 +1,17 @@
 import Button from "@/components/atoms/Buttons";
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 
-function CardProduct({ children }) {
+function CardProduct({ children, link }) {
   return (
     <>
-      <div className="rounded-lg bg-gradient-to-r from-violet-500 via-blue-500 to bg-sky-600 p-1 shadow-xl">
+      <Link
+        href={link}
+        className="rounded-lg bg-gradient-to-r from-violet-500 via-blue-500 to bg-sky-600 p-1 shadow-xl"
+      >
         <div className="flex flex-col w-full max-w-xs h-full bg-white rounded-lg">{children}</div>
-      </div>
+      </Link>
     </>
   );
 }

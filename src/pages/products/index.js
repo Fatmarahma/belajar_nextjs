@@ -158,7 +158,7 @@ function ProductsPage({ products }) {
           {/* products */}
           <div className="flex flex-wrap gap-4">
             {products.map((item) => (
-              <CardProduct key={item.id}>
+              <CardProduct link={`/products/${item.id}`} key={item.id}>
                 <CardProduct.Header image={item.image} />
                 <CardProduct.Body title={item.title} desc={item.description} />
                 <CardProduct.Footer
